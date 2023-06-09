@@ -1,0 +1,156 @@
+@import url('https://fonts.cdnfonts.com/css/answer');
+
+*{
+    background: #314433;
+    font-family: 'Answer', sans-serif;
+    font-weight: 100;
+    background-image: url("images/chip.png");
+    background-size: 40vh;
+    background-position: center;
+}
+
+.appBar{
+    background: #eaeaea;
+    height: 110px;
+    justify-content: left;
+    display: flex;
+    margin: 10px;
+    margin-left: 70px;
+    border-radius: 15px;
+}
+
+h1{
+    background: none;
+    color: #314433;
+    font-size: 40px;
+}
+
+h2{
+    background: none;
+    color: #e8e8e8;
+    font-size: 22px;
+    font-weight: lighter;
+}
+
+h3{
+    background: none;
+    color: #7e807e;
+    font-size: 14px;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+
+.button1 {
+    margin-left: 35%;
+    margin-top: 20px;
+    display: inline-block;
+    padding: 15px 150px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;	
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background: #999;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 5px 5px #d6d6d6;
+  }
+  
+  .button1:hover {background-color: #6d6d6d}
+  
+  .button1:active {
+    color: #9b5c5c;
+    background-color: #6e1c1c;
+    box-shadow: 5px 5px #381414;
+    transform: translateY(4px);
+  }
+
+
+  .container{
+    background: none;
+    justify-content: space-between;
+    display: flex;
+    background: none;
+  }
+
+  label{
+    vertical-align: middle;
+    text-align: center;
+    font-size: 18px;
+    color: #a0b7a2;
+    font-weight: lighter;
+    padding: 20px;
+  }
+
+  input {
+    border: none;
+    font-size: 16px;
+    height: auto;
+    margin: 0;
+    outline: 0;
+    padding: 15px;
+    width: 50vh;
+    background: #ececec;
+    color: #2f2b2b;
+    margin-bottom: 30px;
+    box-shadow: 0px 4px 5px 0px rgba(0,0,0,0.75);
+    border-radius: 0px 10px 10px 0px;
+  }
+
+  .input{
+    background: none;
+    justify-content: space-between;
+    display: flex;
+    margin: 2vh;
+  }
+
+  .player{
+    background: none;
+    justify-content: space-between;
+    display: flex;
+  }
+
+  .player img{
+    height: 45px;
+    margin: 0;
+    border-radius: 10px 0 0 10px;
+    box-shadow: -7px 4px 5px 0px rgba(0,0,0,0.75);
+  }
+
+  .button2 {
+    margin-left: 43%;
+    display: inline-block;
+    padding: 15px 80px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;	
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background: #7B1111;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 5px 5px #d6d6d6;
+  }
+  
+.button2:hover {
+    background-color: #391414
+}
+
+.button2_disable {
+  margin-left: 43%;
+  display: inline-block;
+  padding: 15px 80px;
+  font-size: 16px;
+  cursor: default;
+  text-align: center;	
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background: #918d8d;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 5px 5px #d6d6d6;
+}
