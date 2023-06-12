@@ -31,14 +31,14 @@ const Login = ({setPlayerOne, setPlayerTwo}) => {
               <label htmlFor=""> Player 1 </label>
               <div className="player">
                 <img src={Player} alt=""/>
-                <input name="playerOne" className="playerOne" onChange={stateHandle} type="text" placeholder="Player name"/>
+                <input name="playerOne" onChange={stateHandle} type="text" placeholder="Player name"/>
               </div>
             </div>
             <div className="input">
               <label htmlFor=""> Player 2 </label>
               <div className="player">
                 <img src={Player} alt=""/>
-                <input name="playerTwo"  className="playerTwo" type="text" placeholder="Player name"/>
+                <input name="playerTwo" onChange={stateHandle}   type="text" placeholder="Player name"/>
               </div> 
             </div>
       </div>

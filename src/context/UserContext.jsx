@@ -1,21 +1,21 @@
 import { createContext, useState } from "react";
-import idPlayer from "../data/Cards"
+import IdPlayer from "../data/Cards"
 
 const UserContext = createContext();
 
 
 const UserProvider = ({children}) => {
 
-    const getIdPlayer = () => {
-        idPlayer().then((newIdPlayer) => {
-            setIdPlayer(newIdPlayer.deck_id);
+    const getIdPlayerCards = () => {
+        IdPlayer().then((newIdPlayer) => {
+            setIdPlayerCards(newIdPlayer.deck_id);
         })
     }
 
-    const [IdPlayer, setIdPlayer] = useState(getIdPlayer);
+    const [IdPlayerCards, setIdPlayerCards] = useState(getIdPlayerCards);
 
     const data = {
-        IdPlayer
+        IdPlayerCards
     };
 
     return (
