@@ -53,12 +53,11 @@ const CardsProvider = ({children}) =>{
       const {data} = await axios.get(url);
 
       if(activePlayer === 1 ){
-        setDeckPlayerOne([...deckPlayerOne, data.cards]);
         setActivePlayer(2);
       }else{
-        setDeckPlayerTwo([...deckPlayerTwo, data.cards]);
         setActivePlayer(1);
       }
+      return data;
     }
 
       if(winFlag === false){
@@ -317,7 +316,7 @@ const CardsProvider = ({children}) =>{
             }
         }
 
-        const isSave = ()=>{
+        const isSave = (deckPlayerOne, deckPlayerTwo)=>{
            if (winFlag === false){
             isWinner(deckPlayerOne, deckPlayerTwo);
             if (!winFlag) {
@@ -381,8 +380,11 @@ const CardsProvider = ({children}) =>{
           }
         }
 
+        isSave(deckPlayerOne, deckPlayerTwo);
+        isDelete(deckPlayerOne, deckPlayerTwo);
+
       }else{
-        return(
+        return (
           <>
         <Button onClick={handleWin}>¡Win!</Button>
         <Modal show={modalOpen} onHide={handleClose}>
@@ -391,6 +393,7 @@ const CardsProvider = ({children}) =>{
           </Modal.Header>
           <Modal.Body>
             <img src= {Winner} alt="Winner" />
+            <button className="button2_disable">The winner player is {winPlayer}</button>
           </Modal.Body>
           <Modal.Footer>
             <Button className="button2" variant="secondary" onClick={handleClose}>
@@ -402,7 +405,7 @@ const CardsProvider = ({children}) =>{
         )
       }
       
-    const data = {getCardsOne, getCardsTwo, getCard, deckPlayerOne, deckPlayerTwo}
+    const data = {getCardsOne, getCardsTwo, deckPlayerOne, deckPlayerTwo}
     
     
     return (
