@@ -16,7 +16,13 @@ const CardsProvider = ({children}) =>{
     const [winPlayer, setWinPlayer] = useState([]);
     const [activePlayer, setActivePlayer] = useState(1);
 
-    const winFlag = false;
+    const [quarter, setQuarter] = useState([]);
+    const [triadOne, setTriadOne] = useState([]);
+    const [triadTwo, setTriadTwo] = useState([]);
+
+    const [save, setSave] = useState([]);
+
+    let winFlag = false;
 
     /* Winner Player */
     const [modalOpen, setModalOpen] = useState(false);
@@ -53,220 +59,326 @@ const CardsProvider = ({children}) =>{
         setDeckPlayerTwo([...deckPlayerTwo, data.cards]);
         setActivePlayer(1);
       }
+    }
 
       if(winFlag === false){
 
         const hasFourOfAKind = (deckPlayer) => {
-          const values = {};
-          const suits = {};
+          const counts = {};
 
-          for (let i = 0; i < deckPlayer.length; i++){
+          for (let i = 0; i < deckPlayer.length; i++) {
             const card = deckPlayer[i];
-            const value = card.value;
+            const number = card.value;
             const suit = card.suit;
 
-            values[value] = values[value] ? values[value] + 1 : 1;
-            suits[suit] = true;
+            if (!counts[number]) {
+              counts[number] = { count: 1, suits: new Set([suit]), cards: [card] };
+            } else {
+              counts[number].count++;
+              counts[number].suits.add(suit);
+              counts[number].cards.push(card);
+            }
           }
 
-          const isFourOfAKind = Object.values(values).includes(4) && Object.keys(suits).length === 4;
-
-          if (isFourOfAKind) {
-            return values;
-          }else{
-            return null;
+          for (const key in counts) {
+            if (counts[key].count === 4 && counts[key].suits.size === 4) {
+              return counts[key].cards;
+            }
           }
+
+          return [];
         }
 
         const hasThreeOfAKind = (deckPlayer) => {
-          const values = {};
-          const suits = {};
+          const counts = {};
 
-          for (let i = 0; i < deckPlayer.length; i++){
+          for (let i = 0; i < deckPlayer.length; i++) {
             const card = deckPlayer[i];
-            const value = card.value;
+            const number = card.value;
             const suit = card.suit;
 
-            values[value] = values[value] ? values[value] + 1 : 1;
-            suits[suit] = true;
+            if (!counts[number]) {
+              counts[number] = { count: 1, suits: new Set([suit]), cards: [card] };
+            } else {
+              counts[number].count++;
+              counts[number].suits.add(suit);
+              counts[number].cards.push(card);
+            }
           }
 
-          const isThreeOfAKind = Object.values(values).includes(3) && Object.keys(suits).length === 3;
-
-          if (isThreeOfAKind) {
-            return values;
-          }else{
-            return null;
+          for (const key in counts) {
+            if (counts[key].count === 3 && counts[key].suits.size === 3) {
+              return counts[key].cards;
+            }
           }
+
+          return [];
         }
 
         /* Cartas a salvar */
         const hasTwoOfAKind = (deckPlayer) => {
-          const values = {};
-          const suits = {};
+          const counts = {};
 
-          for (let i = 0; i < deckPlayer.length; i++){
+          for (let i = 0; i < deckPlayer.length; i++) {
             const card = deckPlayer[i];
-            const value = card.value;
+            const number = card.value;
             const suit = card.suit;
 
-            values[value] = values[value] ? values[value] + 1 : 1;
-            suits[suit] = true;
+            if (!counts[number]) {
+              counts[number] = { count: 1, suits: new Set([suit]), cards: [card] };
+            } else {
+              counts[number].count++;
+              counts[number].suits.add(suit);
+              counts[number].cards.push(card);
+            }
           }
 
-          const isThreeOfAKind = Object.values(values).includes(2) && Object.keys(suits).length === 2;
-
-          if (isThreeOfAKind) {
-            return values;
-          }else{
-            return null;
+          for (const key in counts) {
+            if (counts[key].count === 2 && counts[key].suits.size === 2) {
+              return counts[key].cards;
+            }
           }
+
+          return [];
         }
 
         const hasFourOfALadder = (deckPlayer) => {
-          const suits = {}
-          let sortedValues = {}
-          let isFourLadder = false;
+          const valueOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
 
-          for (let i = 0; i < deckPlayer.length; i++){
-            const card = deckPlayer[i]
-            const suit = card.slice(card.suit)
-
-            suits[suit] = suits[suit] ? suits[suit] + 1 : 1;
-          }
-
-          const suitKeys = Object.keys(suits);
-
-          if(suitKeys.length === 1){
-            sortedValues = deckPlayer
-              .map((card) => card.slice(card.value ,card.suit))
-              .sort((a, b) => {
-                const valueOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
-                return valueOrder.indexOf(a) - valueOrder.indexOf(b);
-            });
-
-            for(let i = 0; i < sortedValues.length - 3; i++){
-              const startValue = sortedValues[i];
-              const endValue = sortedValues[i + 3];
-              const isConsecutive = startValue === endValue;
-
-              if (isConsecutive) {
-                isFourLadder = true;
-                break;
+          const sortedArr = deckPlayer.sort((a, b) => {
+            const valueA = a.substring(0, a.length - 1);
+            const valueB = b.substring(0, b.length - 1);
+            return valueOrder.indexOf(valueA) - valueOrder.indexOf(valueB);
+          });
+        
+          for (let i = 0; i < sortedArr.length - 3; i++) {
+            const currentCard = sortedArr[i];
+            const currentSuit = currentCard.charAt(currentCard.length - 1);
+        
+            let count = 1;
+            const ladder = [currentCard];
+        
+            for (let j = i + 1; j < sortedArr.length; j++) {
+              const nextCard = sortedArr[j];
+              const nextValue = nextCard.substring(0, nextCard.length - 1);
+              const nextSuit = nextCard.charAt(nextCard.length - 1);
+        
+              if (
+                valueOrder.indexOf(nextValue) === valueOrder.indexOf(currentCard.substring(0, currentCard.length - 1)) + count &&
+                nextSuit === currentSuit
+              ) {
+                count++;
+                ladder.push(nextCard);
               }
             }
+        
+            if (count === 4) {
+              return ladder;
+            }
           }
-          if (isFourLadder) {
-            return sortedValues;
-          }else{
-            return null;
-          }
+        
+          return [];
         }
 
         const hasThreeOfALadder = (deckPlayer) => {
-          const suits = {}
-          let sortedValues = {}
-          let isThreeLadder = false;
+          const valueOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
+          const sortedArr = deckPlayer.sort((a, b) => {
+            const valueA = a.substring(0, a.length - 1);
+            const valueB = b.substring(0, b.length - 1);
+            return valueOrder.indexOf(valueA) - valueOrder.indexOf(valueB);
+          });
 
-          for (let i = 0; i < deckPlayer.length; i++){
-            const card = deckPlayer[i]
-            const suit = card.slice(card.suit)
+          for (let i = 0; i < sortedArr.length - 2; i++) {
+            const currentCard = sortedArr[i];
+            const currentSuit = currentCard.charAt(currentCard.length - 1);
 
-            suits[suit] = suits[suit] ? suits[suit] + 1 : 1;
-          }
+            let count = 1;
+            const ladder = [currentCard];
 
-          const suitKeys = Object.keys(suits);
+            for (let j = i + 1; j < sortedArr.length; j++) {
+              const nextCard = sortedArr[j];
+              const nextValue = nextCard.substring(0, nextCard.length - 1);
+              const nextSuit = nextCard.charAt(nextCard.length - 1);
 
-          if(suitKeys.length === 1){
-            sortedValues = deckPlayer
-              .map((card) => card.slice(card.value ,card.suit))
-              .sort((a, b) => {
-                const valueOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
-                return valueOrder.indexOf(a) - valueOrder.indexOf(b);
-            });
-
-            for(let i = 0; i < sortedValues.length - 2; i++){
-              const startValue = sortedValues[i];
-              const endValue = sortedValues[i + 2];
-              const isConsecutive = startValue === endValue;
-
-              if (isConsecutive) {
-                isThreeLadder = true;
-                break;
+              if (
+                valueOrder.indexOf(nextValue) === valueOrder.indexOf(currentCard.substring(0, currentCard.length - 1)) + count &&
+                nextSuit === currentSuit
+              ) {
+                count++;
+                ladder.push(nextCard);
               }
             }
+
+            if (count === 3) {
+              return ladder;
+            }
           }
-          if (isThreeLadder) {
-            return sortedValues;
-          }else{
-            return null;
-          }
+
+          return [];
         }
 
         /* Cartas a salvar */
         const hasTwoOfALadder = (deckPlayer) => {
-          const suits = {}
-          let sortedValues = {}
-          let isThreeLadder = false;
+          const valueOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
+          const sortedArr = deckPlayer.sort((a, b) => {
+            const valueA = a.substring(0, a.length - 1);
+            const valueB = b.substring(0, b.length - 1);
+            return valueOrder.indexOf(valueA) - valueOrder.indexOf(valueB);
+          });
 
-          for (let i = 0; i < deckPlayer.length; i++){
-            const card = deckPlayer[i]
-            const suit = card.slice(card.suit)
+          for (let i = 0; i < sortedArr.length - 2; i++) {
+            const currentCard = sortedArr[i];
+            const currentSuit = currentCard.charAt(currentCard.length - 1);
 
-            suits[suit] = suits[suit] ? suits[suit] + 1 : 1;
+            let count = 1;
+            const ladder = [currentCard];
+
+            for (let j = i + 1; j < sortedArr.length; j++) {
+              const nextCard = sortedArr[j];
+              const nextValue = nextCard.substring(0, nextCard.length - 1);
+              const nextSuit = nextCard.charAt(nextCard.length - 1);
+
+              if (
+                valueOrder.indexOf(nextValue) === valueOrder.indexOf(currentCard.substring(0, currentCard.length - 1)) + count &&
+                nextSuit === currentSuit
+              ) {
+                count++;
+                ladder.push(nextCard);
+              }
+            }
+
+            if (count === 2) {
+              return ladder;
+            }
           }
 
-          const suitKeys = Object.keys(suits);
+          return [];
+        }
 
-          if(suitKeys.length === 1){
-            sortedValues = deckPlayer
-              .map((card) => card.slice(card.value ,card.suit))
-              .sort((a, b) => {
-                const valueOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
-                return valueOrder.indexOf(a) - valueOrder.indexOf(b);
-            });
+        const isWinner = (deckPlayerOne, deckPlayerTwo) => {
 
-            for(let i = 0; i < sortedValues.length - 1; i++){
-              const startValue = sortedValues[i];
-              const endValue = sortedValues[i + 1];
-              const isConsecutive = startValue === endValue;
+            useEffect(() => {
+              const detWinner = (deckPlayerOne, deckPlayerTwo) => {
+                if (quarter.length === 0){
+                  if (activePlayer === 1) {
+                    setQuarter(hasFourOfAKind(deckPlayerOne))
+                  }else{
+                    setQuarter(hasFourOfAKind(deckPlayerTwo))
+                  }
+                  if (quarter.length === 0){
+                    if (activePlayer === 1) {
+                      setQuarter(hasFourOfALadder(deckPlayerOne))
+                    }else{
+                      setQuarter(hasFourOfALadder(deckPlayerTwo))
+                    }
+                  }
+                }
 
-              if (isConsecutive) {
-                isThreeLadder = true;
-                break;
+                if(triadOne.length === 0) {
+                  if (activePlayer === 1) {
+                    setTriadOne(hasThreeOfAKind(deckPlayerOne))
+                  }else{
+                    setTriadOne(hasThreeOfAKind(deckPlayerTwo))
+                  }
+                  if(triadOne.length === 0){
+                    if (activePlayer === 1) {
+                      setTriadOne(hasThreeOfALadder(deckPlayerOne))
+                    }else{
+                    setTriadOne(hasThreeOfALadder(deckPlayerTwo))
+                    }
+                  }
+                }
+
+                if(triadTwo.length === 0){
+                  if (activePlayer === 1) {
+                    setTriadTwo(hasThreeOfAKind(deckPlayerOne))
+                  }else{
+                    setTriadTwo(hasThreeOfAKind(deckPlayerOne))
+                  }
+                  if(triadTwo.length === 0){
+                    if (activePlayer === 1) {
+                      setTriadTwo(hasThreeOfALadder(deckPlayerOne))
+                    }else{
+                      setTriadTwo(hasThreeOfALadder(deckPlayerTwo))
+                    }
+                  }
+                }
+              }  
+              detWinner();
+            }, [deckPlayerOne, deckPlayerTwo, quarter, triadOne, triadTwo])
+
+            if (quarter.length !== 0 && triadOne.length !== 0 && triadTwo.length !== 0){
+              winFlag = true;
+              if (activePlayer === 1) {
+                setWinPlayer(1);
+              }else{
+                setWinPlayer(2);
+              }
+            }
+        }
+
+        const isSave = ()=>{
+           if (winFlag === false){
+            isWinner(deckPlayerOne, deckPlayerTwo);
+            if (!winFlag) {
+              if (quarter !== 0 && save.length < 9) {
+                setSave((prevSave) => [...prevSave, quarter]);
+              }
+              if (triadOne !== 0 && save.length < 9) {
+                setSave((prevSave) => [...prevSave, triadOne]);
+              }
+              if (triadTwo !== 0 && save.length < 9) {
+                setSave((prevSave) => [...prevSave, triadTwo]);
+              }
+            
+              if (activePlayer === 1) {
+                setSave((prevSave) => [
+                  ...prevSave,
+                  hasTwoOfAKind(deckPlayerOne),
+                  hasFourOfALadder(deckPlayerOne),
+                ]);
+              } else {
+                setSave((prevSave) => [
+                  ...prevSave,
+                  hasTwoOfAKind(deckPlayerTwo),
+                  hasTwoOfALadder(deckPlayerTwo),
+                ]);
+              }
+            } else {
+              setSave([]);
+            }
+            
+            useEffect(() => {
+              setSave([]);
+            }, [activePlayer]);
+           }
+        }
+
+        const isDelete = (deckPlayer) =>{
+          for (let i = 0; i < deckPlayer.length; i++){
+            if (i >= 0 && i < deckPlayer.length) {
+              const cardToReplace = deckPlayer[i];
+              const isCardInSave = save.some((savedCard) => savedCard.value === cardToReplace.value && savedCard.suit === cardToReplace.suit);
+          
+              if (!isCardInSave) {
+                const newCard = getCard(); // Función para obtener una nueva carta
+          
+                if (activePlayer === 1) {
+                  setDeckPlayerOne((prevDeck) => {
+                    const newDeck = [...prevDeck];
+                    newDeck[i] = newCard;
+                    return newDeck;
+                  });
+                }else{
+                  setDeckPlayerTwo((prevDeck) => {
+                    const newDeck = [...prevDeck];
+                    newDeck[i] = newCard;
+                    return newDeck;
+                  });
+                }
               }
             }
           }
-          if (isThreeLadder) {
-            return sortedValues;
-          }else{
-            return null;
-          }
-        }
-
-        const isWinner = () => {
-            const [quarter, setQuarter] = useState([]);
-            const [triadOne, setTriadOne] = useState([]);
-            const [triadTwo, setTriadTwo] = useState([]);
-
-            useEffect(() => {
-              while (quarter.length === 0 || triadOne.length === 0 || triadTwo.length === 0 ){
-                const detWinner = () => {
-                  if (quarter.length === 0){
-                    
-                  }
-
-                  if(triadOne.length === 0) {
-
-                  }
-
-                  if(triadTwo.length === 0){
-
-                  }
-                }
-              }
-            })
-
         }
 
       }else{
@@ -289,8 +401,6 @@ const CardsProvider = ({children}) =>{
         </>
         )
       }
-
-    }
       
     const data = {getCardsOne, getCardsTwo, getCard, deckPlayerOne, deckPlayerTwo}
     
