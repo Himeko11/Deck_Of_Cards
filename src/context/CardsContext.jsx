@@ -51,30 +51,30 @@ const CardsProvider = ({children}) =>{
       }
 
       const hasFourOfAKind = () => {
-      const counts = {};
+        const counts = {};
 
-      if(activePlayer === 1){
-        setDeckPlayer(deckPlayerOne);
-      }else{
-        setDeckPlayer(deckPlayerTwo)
-      }
-
-      for (let i = 0; i < deckPlayer.length; i++) {
-        const card = deckPlayer[i];
-        const number = card.value;
-        const suit = card.suit;
-
-        if (!counts[number]) {
-          counts[number] = { count: 1, suits: new Set([suit]), cards: [card] };
-        } else {
-          counts[number].count++;
-          counts[number].suits.add(suit);
-          counts[number].cards.push(card);
+        if(activePlayer === 1){
+          setDeckPlayer(deckPlayerOne);
+        }else{
+          setDeckPlayer(deckPlayerTwo)
         }
-      }
 
-      for (const key in counts) {
-        if (counts[key].count === 4 && counts[key].suits.size === 4) {
+        for (let i = 0; i < deckPlayer.length; i++) {
+          const card = deckPlayer[i];
+          const number = card.value;
+          const suit = card.suit;
+
+          if (!counts[number]) {
+            counts[number] = { count: 1, suits: new Set([suit]), cards: [card] };
+          } else {
+            counts[number].count++;
+            counts[number].suits.add(suit);
+            counts[number].cards.push(card);
+          }
+        }
+
+        for (const key in counts) {
+          if (counts[key].count === 4 && counts[key].suits.size === 4) {
           return counts[key].cards;
         }
       }
