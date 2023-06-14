@@ -3,13 +3,12 @@ import CardsContext from "../context/CardsContext";
 
 const CardList = ({playerOne, playerTwo}) => {
 
-  const {getCardsOne, getCardsTwo, getCard, deckPlayerOne, deckPlayerTwo} = useContext(CardsContext);
+  const {getDeckPlayerOne, getDeckPlayerTwo, getCard, deckPlayerOne, deckPlayerTwo} = useContext(CardsContext);
 
   useEffect(() => {
-    getCardsOne();
-    getCardsTwo();
+    getDeckPlayerOne();
+    getDeckPlayerTwo();
   }, []);
-
 
   return (
     <>

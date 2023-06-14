@@ -1,16 +1,16 @@
-import { createContext, useState, useContext, useEffect } from "react"
+import { createContext, useState, useContext, useEffect} from "react"
 import axios from "axios";
 import UserContext from "./UserContext";
-
 import Winner from "../../images/winner.png";
+
 import { Button, Modal } from "react-bootstrap";
+
 
 const CardsContext = createContext();
 
 const CardsProvider = ({children}) =>{
 
     const {IdPlayerCards} = useContext(UserContext);
-
     const [deckPlayerOne, setDeckPlayerOne] = useState([]);
     const [deckPlayerTwo, setDeckPlayerTwo] = useState([]);
     const [deckPlayer, setDeckPlayer] = useState([]);
@@ -24,8 +24,6 @@ const CardsProvider = ({children}) =>{
 
     const [save, setSave] = useState([]);
 
-    let winFlag = false;
-
     /* Winner Player */
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -37,19 +35,22 @@ const CardsProvider = ({children}) =>{
       setModalOpen(false);
     };
 
+    const winFlag = false;  
+  
     const getCard = async () => {
+
       const url = `https://deckofcardsapi.com/api/deck/${IdPlayerCards}/draw/?count=1`;
-      const {data} = await axios.get(url);
+      const { data } = await axios.get(url);
+  
+      console.log(data.cards);
 
-      if(activePlayer === 1 ){
-        setActivePlayer(2);
+      if(activePlayer === 1){
+        setDeckPlayer(deckPlayerOne);
       }else{
-        setActivePlayer(1);
+        setDeckPlayer(deckPlayerTwo)
       }
-      return data;
-    }
 
-    const hasFourOfAKind = () => {
+      const hasFourOfAKind = () => {
       const counts = {};
 
       if(activePlayer === 1){
@@ -256,7 +257,7 @@ const CardsProvider = ({children}) =>{
         }
       }
       return [];
-    }    
+    }
 
     const isWinner = () => {
 
@@ -287,7 +288,7 @@ const CardsProvider = ({children}) =>{
       }, [quarter, triadOne, triadTwo])
 
       if (quarter.length !== 0 && triadOne.length !== 0 && triadTwo.length !== 0){
-        winFlag = true;
+        winFlag(true);
         if (activePlayer === 1) {
           setWinPlayer(1);
         }else{
@@ -299,28 +300,24 @@ const CardsProvider = ({children}) =>{
     useEffect(() => {
       if (!winFlag) {
         if (quarter !== 0 && save.length < 9) {
-          setSave((prevSave) => [...prevSave, quarter]);
+          setSave((prevSave) => [...prevSave, ...quarter]);
         }
         if (triadOne !== 0 && save.length < 9) {
-          setSave((prevSave) => [...prevSave, triadOne]);
+          setSave((prevSave) => [...prevSave, ...triadOne]);
         }
         if (triadTwo !== 0 && save.length < 9) {
-          setSave((prevSave) => [...prevSave, triadTwo]);
+          setSave((prevSave) => [...prevSave, ...triadTwo]);
         }
     
-        if (activePlayer === 1) {
-          setSave((prevSave) => [
-            ...prevSave,
-            hasTwoOfAKind(deckPlayerOne),
-            hasFourOfALadder(deckPlayerOne),
-          ]);
-        } else {
-          setSave((prevSave) => [
-            ...prevSave,
-            hasTwoOfAKind(deckPlayerTwo),
-            hasTwoOfALadder(deckPlayerTwo),
-          ]);
+        if(activePlayer === 1){
+          setDeckPlayer(deckPlayerOne);
+        }else{
+          setDeckPlayer(deckPlayerTwo)
         }
+        
+        hasTwoOfAKind(deckPlayer)
+        hasTwoOfALadder(deckPlayer)
+
       } else {
         setSave([]);
       }
@@ -330,13 +327,20 @@ const CardsProvider = ({children}) =>{
       setSave([]);
     }, [activePlayer]);
     
-    const isSave = (deckPlayerOne, deckPlayerTwo) => {
+    const isSave = () => {
       if (!winFlag) {
-        isWinner(deckPlayerOne, deckPlayerTwo);
+        isWinner();
       }
     }
         
-   const isDelete = (deckPlayer) =>{
+   const isDelete = () =>{
+
+    if(activePlayer === 1){
+      setDeckPlayer(deckPlayerOne);
+    }else{
+      setDeckPlayer(deckPlayerTwo)
+    }
+
     for (let i = 0; i < deckPlayer.length; i++){
       if (i >= 0 && i < deckPlayer.length) {
         const cardToReplace = deckPlayer[i];
@@ -362,60 +366,65 @@ const CardsProvider = ({children}) =>{
       }
     }
   }
-        
-  if(winFlag === false){
 
-    isSave(deckPlayerOne, deckPlayerTwo);
-    isDelete(deckPlayerOne, deckPlayerTwo);
+      isSave();
+      isDelete();
+  
+      if(activePlayer === 1 ){
+        setActivePlayer(2);
+      }else{
+        setActivePlayer(1);
+      }
 
-  }else{
+      if(winFlag === true){
+        return (
+          <>
+        <Button onClick={handleWin}>¡Win!</Button>
+        <Modal show={modalOpen} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>¡Congratulations!</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <img src= {Winner} alt="Winner" />
+            <button className="button2_disable">The winner is the Player {winPlayer}</button>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button className="button2" variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        </>
+        )
+      }    
+    
+    };
+  
+    const getDeckPlayerOne = async () => {
+      const url = `https://deckofcardsapi.com/api/deck/${IdPlayerCards}/draw/?count=10`;
+      const { data } = await axios.get(url);
+      setDeckPlayerOne(data.cards);
+    };
+    const getDeckPlayerTwo = async () => {
+      const url = `https://deckofcardsapi.com/api/deck/${IdPlayerCards}/draw/?count=10`;
+      const { data } = await axios.get(url);
+      setDeckPlayerTwo(data.cards);
+    };
+  
+    const data = {
+      getDeckPlayerOne,
+      getDeckPlayerTwo,
+      getCard,
+      deckPlayerOne,
+      deckPlayerTwo,
+    };
+  
     return (
-      <>
-    <Button onClick={handleWin}>¡Win!</Button>
-    <Modal show={modalOpen} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>¡Congratulations!</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <img src= {Winner} alt="Winner" />
-        <button className="button2_disable">The winner player is {winPlayer}</button>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button className="button2" variant="secondary" onClick={handleClose}>
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
-    </>
-    )
-  }    
-
-  const getCardsOne = async ()=>{
-    const url = `https://deckofcardsapi.com/api/deck/${IdPlayerCards}/draw/?count=10`;
-    const {data} = await axios.get(url);
-    setDeckPlayerOne(data.cards);
-  };
-
-  const getCardsTwo = async ()=>{
-    const url = `https://deckofcardsapi.com/api/deck/${IdPlayerCards}/draw/?count=10`;
-    const {data} = await axios.get(url);
-    setDeckPlayerTwo(data.cards);
-  };
-
-  const data = {getCardsOne, 
-                getCardsTwo, 
-                deckPlayerOne, 
-                deckPlayerTwo, 
-                isWinner
-              }
-
-  return (
-    <CardsContext.Provider value={data}>
+      <CardsContext.Provider value={data}>
         {children}
-    </CardsContext.Provider>
-
-  )  
-}
+      </CardsContext.Provider>
+    );
+  };
 
 export {CardsProvider}
 export default CardsContext;
