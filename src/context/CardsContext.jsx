@@ -13,6 +13,8 @@ const CardsProvider = ({children}) =>{
 
     const [deckPlayerOne, setDeckPlayerOne] = useState([]);
     const [deckPlayerTwo, setDeckPlayerTwo] = useState([]);
+    const [deckPlayer, setDeckPlayer] = useState([]);
+
     const [winPlayer, setWinPlayer] = useState([]);
     const [activePlayer, setActivePlayer] = useState(1);
 
@@ -35,19 +37,6 @@ const CardsProvider = ({children}) =>{
       setModalOpen(false);
     };
 
-
-    const getCardsOne = async ()=>{
-      const url = `https://deckofcardsapi.com/api/deck/${IdPlayerCards}/draw/?count=10`;
-      const {data} = await axios.get(url);
-      setDeckPlayerOne(data.cards);
-    };
-
-    const getCardsTwo = async ()=>{
-      const url = `https://deckofcardsapi.com/api/deck/${IdPlayerCards}/draw/?count=10`;
-      const {data} = await axios.get(url);
-      setDeckPlayerTwo(data.cards);
-    };
-
     const getCard = async () => {
       const url = `https://deckofcardsapi.com/api/deck/${IdPlayerCards}/draw/?count=1`;
       const {data} = await axios.get(url);
@@ -60,8 +49,14 @@ const CardsProvider = ({children}) =>{
       return data;
     }
 
-    const hasFourOfAKind = (deckPlayer) => {
+    const hasFourOfAKind = () => {
       const counts = {};
+
+      if(activePlayer === 1){
+        setDeckPlayer(deckPlayerOne);
+      }else{
+        setDeckPlayer(deckPlayerTwo)
+      }
 
       for (let i = 0; i < deckPlayer.length; i++) {
         const card = deckPlayer[i];
@@ -85,7 +80,14 @@ const CardsProvider = ({children}) =>{
       return [];
     }
 
-    const hasThreeOfAKind = (deckPlayer) => {
+    const hasThreeOfAKind = () => {
+
+      if(activePlayer === 1){
+        setDeckPlayer(deckPlayerOne);
+      }else{
+        setDeckPlayer(deckPlayerTwo)
+      }
+
       const counts = {};
       for (let i = 0; i < deckPlayer.length; i++) {
         const card = deckPlayer[i];
@@ -108,7 +110,14 @@ const CardsProvider = ({children}) =>{
         return [];
     }
 
-    const hasTwoOfAKind = (deckPlayer) => {
+    const hasTwoOfAKind = () => {
+
+      if(activePlayer === 1){
+        setDeckPlayer(deckPlayerOne);
+      }else{
+        setDeckPlayer(deckPlayerTwo)
+      }
+
       const counts = {};
       for (let i = 0; i < deckPlayer.length; i++) {
         const card = deckPlayer[i];
@@ -132,7 +141,14 @@ const CardsProvider = ({children}) =>{
       return [];
     }
 
-    const hasFourOfALadder = (deckPlayer) => {
+    const hasFourOfALadder = () => {
+
+      if(activePlayer === 1){
+        setDeckPlayer(deckPlayerOne);
+      }else{
+        setDeckPlayer(deckPlayerTwo)
+      }
+
       const valueOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
 
       const sortedArr = deckPlayer.sort((a, b) => {
@@ -165,7 +181,14 @@ const CardsProvider = ({children}) =>{
       return [];
     }    
 
-    const hasThreeOfALadder = (deckPlayer) => {
+    const hasThreeOfALadder = () => {
+
+      if(activePlayer === 1){
+        setDeckPlayer(deckPlayerOne);
+      }else{
+        setDeckPlayer(deckPlayerTwo)
+      }
+
       const valueOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
       const sortedArr = deckPlayer.sort((a, b) => {
         const valueA = a.substring(0, a.length - 1);
@@ -197,7 +220,14 @@ const CardsProvider = ({children}) =>{
       return [];
     }    
 
-    const hasTwoOfALadder = (deckPlayer) => {
+    const hasTwoOfALadder = () => {
+
+      if(activePlayer === 1){
+        setDeckPlayer(deckPlayerOne);
+      }else{
+        setDeckPlayer(deckPlayerTwo)
+      }
+
       const valueOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
       const sortedArr = deckPlayer.sort((a, b) => {
         const valueA = a.substring(0, a.length - 1);
@@ -228,56 +258,33 @@ const CardsProvider = ({children}) =>{
       return [];
     }    
 
-    const isWinner = (deckPlayerOne, deckPlayerTwo) => {
+    const isWinner = () => {
+
       useEffect(() => {
-        const detWinner = (deckPlayerOne, deckPlayerTwo) => {
+        const detWinner = () => {
           if (quarter.length === 0){
-            if (activePlayer === 1) {
-              setQuarter(hasFourOfAKind(deckPlayerOne))
-            }else{
-              setQuarter(hasFourOfAKind(deckPlayerTwo))
-            }
+            setQuarter(hasFourOfAKind())
             if (quarter.length === 0){
-              if (activePlayer === 1) {
-                setQuarter(hasFourOfALadder(deckPlayerOne))
-              }else{
-                setQuarter(hasFourOfALadder(deckPlayerTwo))
-              }
+              setQuarter(hasFourOfALadder())
             }
           }
 
           if(triadOne.length === 0) {
-            if (activePlayer === 1) {
-              setTriadOne(hasThreeOfAKind(deckPlayerOne))
-            }else{
-              setTriadOne(hasThreeOfAKind(deckPlayerTwo))
-            }
+            setTriadOne(hasThreeOfAKind())
             if(triadOne.length === 0){
-              if (activePlayer === 1) {
-                setTriadOne(hasThreeOfALadder(deckPlayerOne))
-              }else{
-              setTriadOne(hasThreeOfALadder(deckPlayerTwo))
-              }
+                setTriadOne(hasThreeOfALadder())
             }
           }
 
           if(triadTwo.length === 0){
-            if (activePlayer === 1) {
-              setTriadTwo(hasThreeOfAKind(deckPlayerOne))
-            }else{
-              setTriadTwo(hasThreeOfAKind(deckPlayerOne))
-            }
+            setTriadTwo(hasThreeOfAKind())
             if(triadTwo.length === 0){
-              if (activePlayer === 1) {
-                setTriadTwo(hasThreeOfALadder(deckPlayerOne))
-              }else{
-                setTriadTwo(hasThreeOfALadder(deckPlayerTwo))
-              }
+                setTriadTwo(hasThreeOfALadder())
             }
           }
         }  
         detWinner();
-      }, [deckPlayerOne, deckPlayerTwo, quarter, triadOne, triadTwo])
+      }, [quarter, triadOne, triadTwo])
 
       if (quarter.length !== 0 && triadOne.length !== 0 && triadTwo.length !== 0){
         winFlag = true;
@@ -383,7 +390,24 @@ const CardsProvider = ({children}) =>{
     )
   }    
 
-  const data = {getCardsOne, getCardsTwo, deckPlayerOne, deckPlayerTwo}
+  const getCardsOne = async ()=>{
+    const url = `https://deckofcardsapi.com/api/deck/${IdPlayerCards}/draw/?count=10`;
+    const {data} = await axios.get(url);
+    setDeckPlayerOne(data.cards);
+  };
+
+  const getCardsTwo = async ()=>{
+    const url = `https://deckofcardsapi.com/api/deck/${IdPlayerCards}/draw/?count=10`;
+    const {data} = await axios.get(url);
+    setDeckPlayerTwo(data.cards);
+  };
+
+  const data = {getCardsOne, 
+                getCardsTwo, 
+                deckPlayerOne, 
+                deckPlayerTwo, 
+                isWinner
+              }
 
   return (
     <CardsContext.Provider value={data}>
